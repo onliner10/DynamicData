@@ -45,6 +45,7 @@ namespace DynamicData.List.Internal
 
                 var sourceList = new ChangeAwareList<ExpirableItem<T>>();
 
+
                 var sizeLimited = _source.Synchronize(locker)
                     .Scan(sourceList, (state, latest) =>
                     {
@@ -95,6 +96,8 @@ namespace DynamicData.List.Internal
                 return new CompositeDisposable(publisher,  sizeLimited.Connect());
             });
         }
+        
+
 
         private ExpirableItem<T> CreateExpirableItem(T latest, ref long orderItemWasAdded)
         {

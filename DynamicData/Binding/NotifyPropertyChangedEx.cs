@@ -7,10 +7,175 @@ using DynamicData.Annotations;
 
 namespace DynamicData.Binding
 {
+    public static class NotifyPropertyChangedEx2
+    {
+
+        private static IObservable<TObject> WhenChangedImpl<TObject, TProperty>(this TObject source, Expression<Func<TObject, TProperty>> expression)
+            where TObject : INotifyPropertyChanged
+        {
+            //TODO: add overload which does not manifacture PropertyValue<T,P>
+            var factory = ObservablePropertyFactoryCache.Instance.GetFactory(expression);
+            return factory.Create(source, false)
+                .Select(pv => pv.Sender);
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        /// <returns></returns>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+
+            var propertyChanged = source.WhenChangedImpl(p1);
+            
+            return notifyInitial ?  Observable.Defer(() => Observable.Return(source)).Concat(propertyChanged) : propertyChanged;
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1, TProperty2>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            Expression<Func<TObject, TProperty2>> p2,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+            if (p2 == null) throw new ArgumentNullException(nameof(p2));
+
+            var obs = source.WhenChangedImpl(p1)
+                .Merge(source.WhenChangedImpl(p2));
+
+            return notifyInitial ? Observable.Defer(() => Observable.Return(source)).Concat(obs) : obs;
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        /// <returns></returns>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1, TProperty2, TProperty3>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            Expression<Func<TObject, TProperty2>> p2,
+            Expression<Func<TObject, TProperty3>> p3,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+            if (p2 == null) throw new ArgumentNullException(nameof(p2));
+            if (p3 == null) throw new ArgumentNullException(nameof(p3));
+
+            var obs = source.WhenChangedImpl(p1)
+                .Merge(source.WhenChangedImpl(p2))
+                .Merge(source.WhenChangedImpl(p3));
+
+            return notifyInitial ? Observable.Defer(() => Observable.Return(source)).Concat(obs) : obs;
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        /// <returns></returns>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1, TProperty2, TProperty3, TProperty4>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            Expression<Func<TObject, TProperty2>> p2,
+            Expression<Func<TObject, TProperty3>> p3,
+            Expression<Func<TObject, TProperty4>> p4,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+            if (p2 == null) throw new ArgumentNullException(nameof(p2));
+            if (p3 == null) throw new ArgumentNullException(nameof(p3));
+            if (p4 == null) throw new ArgumentNullException(nameof(p4));
+
+            var obs = source.WhenChangedImpl(p1)
+                .Merge(source.WhenChangedImpl(p2))
+                .Merge(source.WhenChangedImpl(p3))
+                .Merge(source.WhenChangedImpl(p4));
+
+            return notifyInitial ? Observable.Defer(() => Observable.Return(source)).Concat(obs) : obs;
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        /// <returns></returns>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1, TProperty2, TProperty3, TProperty4, TProperty5>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            Expression<Func<TObject, TProperty2>> p2,
+            Expression<Func<TObject, TProperty3>> p3,
+            Expression<Func<TObject, TProperty4>> p4,
+            Expression<Func<TObject, TProperty5>> p5,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+            if (p2 == null) throw new ArgumentNullException(nameof(p2));
+            if (p3 == null) throw new ArgumentNullException(nameof(p3));
+            if (p4 == null) throw new ArgumentNullException(nameof(p4));
+            if (p5 == null) throw new ArgumentNullException(nameof(p5));
+
+            var obs = source.WhenChangedImpl(p1)
+                .Merge(source.WhenChangedImpl(p2))
+                .Merge(source.WhenChangedImpl(p3))
+                .Merge(source.WhenChangedImpl(p4))
+                .Merge(source.WhenChangedImpl(p5));
+
+            return notifyInitial ? Observable.Defer(() => Observable.Return(source)).Concat(obs) : obs;
+        }
+
+        /// <summary>
+        /// Observes changes for the specified object, returning the observed object when it has changed.
+        /// </summary>
+        /// <param name="notifyInitial">Optionally notify the object upon subscription</param>
+        /// <returns></returns>
+        public static IObservable<TObject> WhenObjectChanged<TObject, TProperty1, TProperty2, TProperty3, TProperty4, TProperty5, TProperty6>([NotNull] this TObject source,
+            Expression<Func<TObject, TProperty1>> p1,
+            Expression<Func<TObject, TProperty2>> p2,
+            Expression<Func<TObject, TProperty3>> p3,
+            Expression<Func<TObject, TProperty4>> p4,
+            Expression<Func<TObject, TProperty5>> p5,
+            Expression<Func<TObject, TProperty6>> p6,
+            bool notifyInitial = false)
+            where TObject : INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (p1 == null) throw new ArgumentNullException(nameof(p1));
+            if (p2 == null) throw new ArgumentNullException(nameof(p2));
+            if (p3 == null) throw new ArgumentNullException(nameof(p3));
+            if (p4 == null) throw new ArgumentNullException(nameof(p4));
+            if (p5 == null) throw new ArgumentNullException(nameof(p5));
+            if (p6 == null) throw new ArgumentNullException(nameof(p6));
+
+            var obs = source.WhenChangedImpl(p1)
+                .Merge(source.WhenChangedImpl(p2))
+                .Merge(source.WhenChangedImpl(p3))
+                .Merge(source.WhenChangedImpl(p4))
+                .Merge(source.WhenChangedImpl(p5));
+
+            return notifyInitial ? Observable.Defer(() => Observable.Return(source)).Concat(obs) : obs;
+        }
+    }
+    
+
     /// <summary>
-    /// Property changes notification
-    /// </summary>
-    public static class NotifyPropertyChangedEx
+        /// Property changes notification
+        /// </summary>
+        public static class NotifyPropertyChangedEx
     {
         /// <summary>
         /// Notifies when any any property on the object has changed

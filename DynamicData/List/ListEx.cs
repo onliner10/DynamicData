@@ -584,20 +584,28 @@ namespace DynamicData
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (changes == null) throw new ArgumentNullException(nameof(changes));
+            return;
+
             if (source is List<T>)
             {
                 var list = (List<T>)source;
-                list.Capacity = list.Count + changes.Adds;
+
+                if (list.Count + changes.Adds > list.Capacity)
+                    list.Capacity *= 2;
             }
             else if (source is ISupportsCapcity)
             {
                 var list = (ISupportsCapcity)source;
-                list.Capacity = list.Count + changes.Adds;
+
+                if (list.Count + changes.Adds > list.Capacity)
+                    list.Capacity *= 2;
             }
             else if (source is IChangeSet)
             {
                 var original = (IChangeSet)source;
-                original.Capacity = original.Count + changes.Count;
+
+                if (original.Count + changes.Count > original.Capacity)
+                    original.Capacity *= 2;
             }
         }
 

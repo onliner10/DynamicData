@@ -42,6 +42,9 @@ namespace DynamicData
         {
             Items = items?.AsList() ?? throw new ArgumentNullException(nameof(items));
             Items.ForEach(change => Add(change, true));
+
+            Items = new List<Change<TObject, TKey>>(items);
+            Items.ForEach(change => Add(change, false));
         }
 
         /// <summary>

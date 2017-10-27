@@ -103,6 +103,28 @@ namespace DynamicData.Tests.Binding
             13.Should().Be(lastChange.Value);
         }
 
+        [Theory,
+         InlineData(true),
+         InlineData(false)]
+        public void WhenChanged(bool notifyOnInitialValue)
+        {
+            int changeCount = 0;
+            
+            var person = new Person("Name", 10);
+            person
+                    .WhenObjectChanged(p => p.Name, notifyOnInitialValue)
+                    .Subscribe(p => changeCount++, ex=>{})  ;
 
+
+            var initialCount = notifyOnInitialValue ? 1 : 0;
+
+            changeCount.Should().Be(initialCount);
+
+            person.Age = 12;
+            changeCount.Should().Be(initialCount + 1);
+            
+            person.Age = 13;
+            changeCount.Should().Be(initialCount + 2);
+        }
     }
 }

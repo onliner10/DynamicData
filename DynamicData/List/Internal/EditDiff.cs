@@ -8,7 +8,7 @@ namespace DynamicData.List.Internal
 {
     internal class EditDiff<T>
     {
-        private readonly ISourceList<T> _source;
+        private readonly ISourceList<T> _source; 
         private readonly IEqualityComparer<T> _equalityComparer;
 
         public EditDiff([NotNull] ISourceList<T> source, IEqualityComparer<T> equalityComparer)
