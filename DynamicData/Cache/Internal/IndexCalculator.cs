@@ -35,7 +35,7 @@ namespace DynamicData.Cache.Internal
         {
             //for the first batch of changes may have arrived before the comparer was set.
             //therefore infer the first batch of changes from the cache
-            _list = cache.KeyValues.OrderBy(kv => kv, _comparer).ToList();
+            _list = cache.KeyValues.AsParallel().OrderBy(kv => kv, _comparer).ToList();
             var initialItems = _list.Select((t, index) => new Change<TObject, TKey>(ChangeReason.Add, t.Key, t.Value, index));
             return new ChangeSet<TObject, TKey>(initialItems);
         }
@@ -47,7 +47,7 @@ namespace DynamicData.Cache.Internal
         /// <returns></returns>
         public void Reset(ChangeAwareCache<TObject, TKey> cache)
         {
-            _list = cache.KeyValues.OrderBy(kv => kv, _comparer).ToList();
+            _list = cache.KeyValues.AsParallel().OrderBy(kv => kv, _comparer).ToList();
         }
 
         public IChangeSet<TObject, TKey> ChangeComparer(KeyValueComparer<TObject, TKey> comparer)

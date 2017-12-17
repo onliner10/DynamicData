@@ -3,15 +3,13 @@
     <TargetFrameworks>netstandard2.0;netstandard1.1;net45;net46</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
   </ItemGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' or '$(TargetFramework)' == 'net46'">
     <DefineConstants>P_LINQ</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup>
     <Authors>Roland Pheasant</Authors>
     <Owners>Roland Pheasant</Owners>
@@ -29,6 +27,4 @@ Dynamic Data is a comprehensive caching and data manipulation solution which int
     <RepositoryUrl>https://github.com/RolandPheasant/DynamicData</RepositoryUrl>
     <PackageTags>DynamicData Dynamic Data Rx Reactive Observable Cache Binding ObservableCache ObservableList ObservableCollection Collection Linq</PackageTags>
   </PropertyGroup>
-
-
 </Project>
