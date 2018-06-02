@@ -25,7 +25,7 @@ namespace DynamicData.Tests.Cache
 
         public SortFixtureWithReorder()
         {
-            _comparer = SortExpressionComparer<Person>.Ascending(p => p.Name).ThenByAscending(p => p.Age);
+            _comparer = SortExpressionComparer<Person>.Ascending(p => p.Age).ThenByAscending(p => p.Name);
 
             _source = new SourceCache<Person, string>(p => p.Key);
             _results = new SortedChangeSetAggregator<Person, string>
@@ -719,6 +719,26 @@ namespace DynamicData.Tests.Cache
             _results.Data.Count.Should().Be(100, "Should be 100 people in the cache");
 
             var expectedResult = people.OrderBy(p => p, _comparer).Select(p => new KeyValuePair<string, Person>(p.Name, p)).ToList();
+            var actualResult = _results.Messages[0].SortedItems.ToList();
+
+            actualResult.ShouldAllBeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public void SortInitialBatch_WithDuplicates()
+        {
+            var people = _generator.Take(100).ToArray();
+            var updated = people.Take(10).Select(p => new Person(p.Name, 99, p.Gender, p.ParentName)).ToArray();
+            var peopleWithDuplicates = people.Concat(updated).ToArray();
+
+            _source.AddOrUpdate(peopleWithDuplicates);
+
+            _results.Data.Count.Should().Be(100, "Should be 100 people in the cache");
+
+            var expectedResult = peopleWithDuplicates
+                .GroupBy(p => p.Key)
+                .Select(g => g.OrderByDescending(x=>x.Age).First())
+                .OrderBy(p => p, _comparer).Select(p => new KeyValuePair<string, Person>(p.Name, p)).ToList();
             var actualResult = _results.Messages[0].SortedItems.ToList();
 
             actualResult.ShouldAllBeEquivalentTo(expectedResult);

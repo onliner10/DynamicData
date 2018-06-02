@@ -104,7 +104,6 @@ namespace DynamicData.Cache.Internal
             foreach (var u in changes)
             {
                 var current = new KeyValuePair<TKey, TObject>(u.Key, u.Current);
-
                 switch (u.Reason)
                 {
                     case ChangeReason.Add:
@@ -145,39 +144,6 @@ namespace DynamicData.Cache.Internal
                             result.Add(u);
                         }
                         break;
-                }
-            }
-
-            //for evaluates, check whether the change forces a new position
-            var evaluates = refreshes.OrderByDescending(x => new KeyValuePair<TKey, TObject>(x.Key, x.Current), _comparer)
-                                   .ToList();
-
-            if (evaluates.Count != 0 && _optimisations.HasFlag(SortOptimisations.IgnoreEvaluates))
-            {
-                //reorder entire sequence and do not calculate moves
-                _list = _list.OrderBy(kv => kv, _comparer).ToList();
-            }
-            else
-            {
-                //calculate moves.  Very expensive operation
-                //TODO: Try and make this better
-                foreach (var u in evaluates)
-                {
-                    var current = new KeyValuePair<TKey, TObject>(u.Key, u.Current);
-                    var old = _list.IndexOf(current);
-                    if (old == -1) continue;
-
-                    int newposition = GetInsertPositionLinear(_list, current);
-
-                    if (old < newposition)
-                        newposition--;
-
-                    if (old == newposition)
-                        continue;
-
-                    _list.RemoveAt(old);
-                    _list.Insert(newposition, current);
-                    result.Add(new Change<TObject, TKey>(u.Key, u.Current, newposition, old));
                 }
             }
 
