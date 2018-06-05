@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Cache.Internal;
+using DynamicData.Kernel;
 using DynamicData.Tests.Domain;
 using FluentAssertions;
 using Xunit;
@@ -40,6 +41,15 @@ namespace DynamicData.Tests.Cache
         {
             var result = ChangesReducer.Reduce(other, remove);
             result.Value.Should().Be(remove);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GetChanges))]
+        public void NoneGetsOverridenByAnything(Change<Person, string> c)
+        {
+            var result = ChangesReducer.Reduce(Optional<Change<Person, string>>.None, c);
+            result.Value.Should().Be(c);
         }
 
         [Fact]
@@ -103,6 +113,13 @@ namespace DynamicData.Tests.Cache
             var others = _changes.Where(c => c.Reason != constraint && !othersExcept.Contains(c.Reason));
             return others.Select(other =>
                 new object[] {constrainedValue, other});
+        }
+
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static IEnumerable<object[]> GetChanges()
+        {
+            return _changes.Select(x=> new object[] { x });
         }
     }
 }

@@ -7,29 +7,32 @@ namespace DynamicData.Cache.Internal
     {
         [Pure]
         public static Optional<Change<TObject, TKey>> Reduce<TObject, TKey>(
-            Change<TObject, TKey> previous,
+            Optional<Change<TObject, TKey>> previous,
             Change<TObject, TKey> next)
         {
-            if (previous.Reason == ChangeReason.Add && next.Reason == ChangeReason.Remove)
+            if (!previous.HasValue) return next;
+            var previousValue = previous.Value;
+
+            if (previousValue.Reason == ChangeReason.Add && next.Reason == ChangeReason.Remove)
             {
                 return Optional<Change<TObject, TKey>>.None;
             } 
-            else if (previous.Reason == ChangeReason.Remove && next.Reason == ChangeReason.Add)
+            else if (previousValue.Reason == ChangeReason.Remove && next.Reason == ChangeReason.Add)
             {
                 return Optional.Some(
-                    new Change<TObject, TKey>(ChangeReason.Update, next.Key, next.Current, previous.Current,
-                        next.CurrentIndex, previous.CurrentIndex)
+                    new Change<TObject, TKey>(ChangeReason.Update, next.Key, next.Current, previousValue.Current,
+                        next.CurrentIndex, previousValue.CurrentIndex)
                 );
             }
-            else if (previous.Reason == ChangeReason.Add && next.Reason == ChangeReason.Update)
+            else if (previousValue.Reason == ChangeReason.Add && next.Reason == ChangeReason.Update)
             {
                 return Optional.Some(new Change<TObject, TKey>(ChangeReason.Add, next.Key, next.Current, next.CurrentIndex));
             }
-            else if (previous.Reason == ChangeReason.Update && next.Reason == ChangeReason.Update)
+            else if (previousValue.Reason == ChangeReason.Update && next.Reason == ChangeReason.Update)
             {
                 return Optional.Some(
-                   new Change<TObject, TKey>(ChangeReason.Update, previous.Key, next.Current, previous.Previous,
-                        next.CurrentIndex, previous.PreviousIndex)
+                   new Change<TObject, TKey>(ChangeReason.Update, previousValue.Key, next.Current, previousValue.Previous,
+                        next.CurrentIndex, previousValue.PreviousIndex)
                 );
             }
             else

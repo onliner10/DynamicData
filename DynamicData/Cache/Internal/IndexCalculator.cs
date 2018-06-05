@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,17 @@ namespace DynamicData.Cache.Internal
             _comparer = comparer;
             _optimisations = optimisations;
             _list = new List<KeyValuePair<TKey, TObject>>();
+        }
+
+        public IEnumerable<Change<TObject, TKey>> ReduceChanges(IEnumerable<Change<TObject, TKey>> input)
+        {
+            return input
+                .GroupBy(kvp=>kvp.Key)
+                .Select(g => {
+                    return g.Aggregate(Optional<Change<TObject, TKey>>.None, (acc, kvp) => ChangesReducer.Reduce(acc, kvp));
+                })
+                .Where(x=>x.HasValue)
+                .Select(x=>x.Value);
         }
 
         /// <summary>
@@ -96,10 +108,10 @@ namespace DynamicData.Cache.Internal
         /// Dynamic calculation of moved items which produce a result which can be enumerated through in order
         /// </summary>
         /// <returns></returns>
-        public IChangeSet<TObject, TKey> Calculate(IChangeSet<TObject, TKey> changes)
-        {
-            var result = new List<Change<TObject, TKey>>(changes.Count);
-            var refreshes = new List<Change<TObject, TKey>>(changes.Refreshes);
+        public IChangeSet<TObject, TKey> Calculate(IChangeSet<TObject, TKey> c)
+        {   
+            var result = new List<Change<TObject, TKey>>(c.Count);
+            var refreshes = new List<Change<TObject, TKey>>(c.Refreshes);
 
             foreach (var u in changes)
             {
